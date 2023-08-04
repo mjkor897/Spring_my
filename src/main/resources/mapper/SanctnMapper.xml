@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.spring_my.sanctn.serviceImpl.SanctnMapper">
+
+    <select id="list" resultType="SanctnDto">
+        SELECT
+               SANCTN_ID
+             , SANCTN_DOC_NM
+             , SANCTN_SJ
+             , SANCTN_STTUS_CD_ID
+             , TO_CHAR(RGS_DT, 'YYYY-MM-DD') AS RGS_DT
+        FROM
+            TB_SANCTN
+        WHERE
+            RGS_USER_ID = #{rgsUserId}
+        ORDER BY SANCTN_ID DESC
+    </select>
+
+    <!-- 결재 상세조회 -->
+    <select id="view" resultType="SanctnDto">
+        SELECT
+               SANCTN_ID
+             , SANCTN_DOC_NM
+             , SANCTN_SJ
+             , SANCTN_CN
+             , SANCTN_STTUS_CD_ID
+             , SANCTN_DRAFT_NM
+             , SANCTN_DRAFT_RANK_NM
+             , RGS_USER_ID
+             , RGS_DT
+             , UNITY_ID
+        FROM
+            TB_SANCTN
+        WHERE
+            SANCTN_ID = #{sanctnId}
+    </select>
+
+    <!-- 결재자 조회 -->
+    <select id="selectSanctnUser" resultType="SanctnDto">
+        SELECT
+               SANCTN_ID
+             , SANCTN_MBR_CD
+             , SANCTN_USER_STTUS_CD_ID
+             , SANCTN_DT
+             , SANCTN_MBR_NM
+             , SANCTN_MBR_RANK_NM
+        FROM
+            TB_SANCTN_USER
+        WHERE
+            SANCTN_ID = #{sanctnId}
+    </select>
+
+    <!-- 참조자 조회 -->
+    <select id="selectSanctnCcUser" resultType="SanctnDto">
+        SELECT
+               SANCTN_ID
+             , CC_MBR_NM
+             , CC_MBR_CD
+             , CC_MBR_RANK_NM
+        FROM
+            TB_SANCTN_CC_USER
+        WHERE
+            SANCTN_ID = #{sanctnId}
+    </select>
+
+    <!-- 결재정보 -->
+    <insert id="insertSanctn" parameterType="SanctnDto" useGeneratedKeys="true" keyColumn="SANCTN_ID" keyProperty="sanctnId">
+        INSERT INTO TB_SANCTN (
+                                 SANCTN_ID, SANCTN_DOC_NO, SANCTN_DOC_NM, SANCTN_SJ, SANCTN_CN, SANCTN_STTUS_CD_ID
+                               , RGS_DT, RGS_USER_ID, UPD_DT, UPD_USER_ID, UNITY_ID, SANCTN_DRAFT_ID, SANCTN_DRAFT_NM, SANCTN_DRAFT_RANK_NM
+        ) VALUES (
+                             'SANCTN_' || TO_CHAR(SANCTN_SEQ.nextval), #{sanctnDocNo}, #{sanctnDocNm}, #{sanctnSj}, #{sanctnCn}, #{sanctnSttusCdId}
+                 , SYSDATE, #{rgsUserId}, SYSDATE, #{updUserId}, #{unityId}, #{sanctnDraftId}, #{sanctnDraftNm}, #{sanctnDraftRankNm}
+                 )
+    </insert>
+
+    <!-- 결재자 -->
+    <insert id="insertSanctnUser" parameterType="SanctnDto">
+        INSERT INTO TB_SANCTN_USER (
+                                  SANCTN_ID, SANCTN_MBR_CD, SANCTN_MBR_NM, SANCTN_MBR_RANK_NM, SANCTN_USER_STTUS_CD_ID, SANCTN_MBR_ID
+        ) VALUES (
+                       #{sanctnId}, #{sanctnMbrCd}, #{sanctnMbrNm}, #{sanctnMbrRankNm}, #{sanctnUserSttusCdId}, #{sanctnMbrId}
+                 )
+    </insert>
+
+    <!-- 참조자 -->
+    <insert id="insertSanctnCcUser" parameterType="SanctnDto">
+        INSERT INTO TB_SANCTN_CC_USER (
+                                     SANCTN_ID, CC_MBR_CD, CC_MBR_NM, CC_MBR_RANK_NM, CC_MBR_ID, SANCTN_CC_STTUS_CD_ID
+        ) VALUES (
+                     #{sanctnId}, #{ccMbrCd}, #{ccMbrNm}, #{ccMbrRankNm}, #{ccMbrId}, #{sanctnCcSttusCdId}
+                 )
+    </insert>
+
+    <select id="getSanctnFileList" resultType="FileDto">
+        SELECT * FROM TB_FILE
+        WHERE UNITY_ID = #{unityId}
+    </select>
+
+    <!-- 결재자 목록 보여주기 -->
+    <select id="selectSanctnList" resultType="SanctnDto">
+        SELECT
+            B.SANCTN_ID
+             , SANCTN_MBR_CD
+             , SANCTN_MBR_ID
+             , SANCTN_MBR_NM
+             , SANCTN_USER_STTUS_CD_ID
+             , SANCTN_DRAFT_ID
+             , SANCTN_DRAFT_NM
+             , B.SANCTN_DOC_NM
+             , B.SANCTN_STTUS_CD_ID
+             , TO_CHAR(B.RGS_DT, 'YYYY-MM-DD') AS RGS_DT
+        FROM TB_SANCTN_USER A
+             LEFT OUTER JOIN TB_SANCTN B
+                ON A.SANCTN_ID = B.SANCTN_ID
+        WHERE
+            A.SANCTN_MBR_ID = #{suserId}
+    </select>
+
+    <!-- 참조자 목록 보여주기 -->
+    <select id="selectSanctnCcList" resultType="SanctnDto">
+        SELECT
+               A.SANCTN_ID
+             , B.SANCTN_CC_STTUS_CD_ID
+             , A.SANCTN_DRAFT_ID
+             , A.SANCTN_DRAFT_NM
+             , A.SANCTN_DOC_NM
+             , A.SANCTN_STTUS_CD_ID
+             , TO_CHAR(A.RGS_DT, 'YYYY-MM-DD') AS RGS_DT
+        FROM TB_SANCTN A
+            LEFT OUTER JOIN TB_SANCTN_CC_USER B
+                ON A.SANCTN_ID = B.SANCTN_ID
+        WHERE
+            B.CC_MBR_ID = #{suserId}
+    </select>
+
+    <!-- 결재문서상태 업데이트 -->
+    <update id="sttusDocUpdate" parameterType="SanctnDto">
+        UPDATE TB_SANCTN
+        SET
+            SANCTN_STTUS_CD_ID = #{sanctnSttusCdId}
+        WHERE
+            SANCTN_ID = #{sanctnId}
+    </update>
+
+    <!-- 결재유저상태 업데이트 -->
+    <update id="sttusUpdate" parameterType="SanctnDto">
+        UPDATE TB_SANCTN_USER
+        SET
+            SANCTN_USER_STTUS_CD_ID = #{sanctnUserSttusCdId}
+        WHERE
+            SANCTN_ID = #{sanctnId}
+            AND
+            SANCTN_MBR_ID = #{sanctnMbrId}
+    </update>
+
+
+</mapper>

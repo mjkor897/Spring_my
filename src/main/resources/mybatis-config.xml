@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+    <!-- 내부에서 사용하려는 변수가 있는 파일 지정 : ${name}으로 참조 -->
+    <properties resource="application.properties"/>
+
+    <settings>
+        <!-- VO에 리턴값을 받을때 카멜케이스를 적용(예: db의 컬럼형태가 USER_ID 인 경우 등) -->
+        <setting name="mapUnderscoreToCamelCase" value="true" />
+        <!-- 파라미터에 NULL값을 허용하기 위해 선언 -->
+        <setting name="jdbcTypeForNull" value="NULL"/>
+        <!-- 쿼리 결과 필드가 null인 경우, 누락이 되서 나오는데 누락이 안되게 하는 설정 = null이라도 출력되기를 원한다면 -->
+        <setting name="callSettersOnNulls" value="true"/>
+    </settings>
+
+    <!-- 사용하려는 DTO(VO)에 대한 축약 이름 / resultType에 풀패키지명 대신 alias에 적힌 이름으로 사용 -->
+    <typeAliases>
+        <typeAlias type="com.example.spring_my.board.service.BoardDto" alias="BoardDto" />
+        <typeAlias type="com.example.spring_my.cmpny.service.CmpnyDto" alias="CmpnyDto" />
+        <typeAlias type="com.example.spring_my.member.service.MemberDto" alias="MemberDto" />
+        <typeAlias type="com.example.spring_my.dept.service.DeptDto" alias="DeptDto" />
+        <typeAlias type="com.example.spring_my.mail.service.MailDto" alias="MailDto" />
+        <typeAlias type="com.example.spring_my.stats.service.StatsDto" alias="StatsDto" />
+        <typeAlias type="com.example.spring_my.sanctn.service.SanctnDto" alias="SanctnDto" />
+        <typeAlias type="com.example.spring_my.file.service.FileDto" alias="FileDto" />
+    </typeAliases>
+
+    <!-- connection pool -->
+    <!-- 보안, 유지보수 차원에서 정보를 빼내서 사용 -->
+    <!--<environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="${driver}"/>
+                <property name="url" value="${url}"/>
+                <property name="username" value="${dbid}"/>
+                <property name="password" value="${dbpwd}"/>
+            </dataSource>
+        </environment>
+    </environments>-->
+
+    <!-- 사용할 쿼리에 대한 등록 -->
+    <!--<mappers>
+        <mapper resource="mapper.BoardMapper.xml" />
+        <mapper resource="mapper.DeptMapper.xml" />
+        <mapper resource="mapper.MemberMapper.xml" />
+        <mapper resource="mapper.NoticeMapper.xml" />
+    </mappers>-->
+</configuration>

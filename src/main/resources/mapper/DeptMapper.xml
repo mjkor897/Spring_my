@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.spring_my.dept.serviceImpl.DeptMapper">
+
+    <resultMap id="dept" type="com.example.spring_my.dept.service.DeptDto">
+        <result column="HIGH_DEPT_CD" property="highDeptCd" javaType="string" />
+        <result column="HIGH_DEPT_NM" property="highDeptNm" javaType="string" />
+
+        <collection property ="rowDepts" ofType = "com.example.spring_my.dept.service.DeptDto" javaType = "java.util.List">
+            <result column="ROW_DEPT_CD" property="rowDeptCd" javaType="string" />
+            <result column="ROW_DEPT_NM" property="rowDeptNm" javaType="string" />
+        </collection>
+
+    </resultMap>
+
+    <!-- 부서 조회 : resultType을 통일해주지 못하나? -->
+    <select id="selectDeptList" resultMap="dept">
+        SELECT
+              HIGH_DEPT_CD		/* 상위부서코드 */
+            , HIGH_DEPT_NM		/* 상위부서이름 */
+            , ROW_DEPT_CD		/* 하위부서코드 */
+            , ROW_DEPT_NM		/* 하위부서이름 */
+        FROM
+            TB_DEPT
+        ORDER BY
+            HIGH_DEPT_CD DESC
+    </select>
+
+    <resultMap id="sanctnLine" type="com.example.spring_my.dept.service.DeptDto">
+        <result column="HIGH_DEPT_CD" property="highDeptCd" javaType="string" />
+        <result column="HIGH_DEPT_NM" property="highDeptNm" javaType="string" />
+
+        <collection property ="rowSanctns" ofType = "com.example.spring_my.dept.service.DeptDto" javaType = "java.util.List">
+            <result column="ROW_DEPT_CD" property="rowDeptCd" javaType="string" />
+            <result column="ROW_DEPT_NM" property="rowDeptNm" javaType="string" />
+
+            <collection property ="rowSanctns" ofType = "com.example.spring_my.member.service.MemberDto" javaType = "java.util.List">
+                <result column="MBR_CD" property="mbrCd" javaType="string" />
+                <result column="MBR_NM" property="mbrNm" javaType="string" />
+                <result column="MBR_RANK_NM" property="mbrRankNm" javaType="string" />
+                <result column="DEPT_CD" property="deptCd" javaType="string" />
+                <result column="DEPT_NM" property="deptNm" javaType="string" />
+            </collection>
+
+        </collection>
+    </resultMap>
+
+    <resultMap id="singleSanctnLine" type="com.example.spring_my.dept.service.DeptDto">
+        <result column="ROW_DEPT_CD" property="rowDeptCd" javaType="string" />
+        <result column="ROW_DEPT_NM" property="rowDeptNm" javaType="string" />
+
+        <collection property ="rowSingleSanctns" ofType = "com.example.spring_my.dept.service.DeptDto" javaType = "java.util.List">
+            <result column="MBR_CD" property="mbrCd" javaType="string" />
+            <result column="MBR_NM" property="mbrNm" javaType="string" />
+            <result column="MBR_RANK_NM" property="mbrRankNm" javaType="string" />
+        </collection>
+    </resultMap>
+
+    <select id="sanctnList" resultMap="sanctnLine">
+        SELECT
+            A.HIGH_DEPT_CD
+             , A.HIGH_DEPT_NM
+             , A.ROW_DEPT_CD
+             , A.ROW_DEPT_NM
+             , B.MBR_CD
+             , B.MBR_NM
+             , B.MBR_RANK_NM
+        FROM
+            TB_DEPT A
+                LEFT OUTER JOIN TB_MEMBER B
+                                ON A.ROW_DEPT_CD = B.DEPT_CD
+        WHERE HIGH_DEPT_CD IS NOT NULL
+          AND B.MBR_STTUS_CD = '재직'
+        ORDER BY ROW_DEPT_CD ASC
+    </select>
+
+    <!-- 단일부서용 쿼리 -->
+    <select id="singleSanctnList" resultMap="singleSanctnLine">
+        SELECT
+            A.ROW_DEPT_CD
+             , A.ROW_DEPT_NM
+             , B.MBR_CD
+             , B.MBR_NM
+             , B.MBR_RANK_NM
+        FROM TB_DEPT A
+                 LEFT OUTER JOIN TB_MEMBER B
+                                 ON A.ROW_DEPT_CD = B.DEPT_CD
+        WHERE HIGH_DEPT_CD IS NULL
+          AND B.MBR_STTUS_CD = '재직'
+    </select>
+
+    <select id="selectMbrCd" resultType="DeptDto">
+        SELECT
+        MBR_CD
+        , MBR_ID
+        , MBR_NM
+        , MBR_RANK_NM
+        , DEPT_CD
+        , DEPT_NM
+        FROM TB_MEMBER
+        <trim prefix="WHERE" prefixOverrides="AND">
+            <if test=" mbrCdArr.size != 0 ">
+                <foreach collection="mbrCdArr" item="alias" separator="or">
+                    MBR_CD = #{alias}
+                </foreach>
+            </if>
+        </trim>
+    </select>
+
+</mapper>

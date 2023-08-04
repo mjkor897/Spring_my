@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.spring_my.board.serviceImpl.BoardMapper">
+
+    <!--<resultMap type="com.example.spring_my.board.service.BoardDto" id="boardList">
+        <id property="boardId" column="boardId"/>
+        <result property="boardSj" column="boardSj"/>
+        <result property="boardCn" column="boardCn"/>
+    </resultMap>
+
+    <select id="view" resultType="BoardDto">
+        SELECT
+              BOARD_ID
+            , BOARD_SJ
+        FROM
+            TB_BOARD
+        WHERE
+            BOARD_ID = 'BRD_00001'
+        ORDER BY BOARD_ID DESC
+    </select>
+
+    <select id="list" resultType="BoardDto">
+        SELECT
+              BOARD_ID
+            , BOARD_SJ
+            , BOARD_CN
+        FROM
+            TB_BOARD
+        ORDER BY BOARD_ID DESC
+    </select>
+
+    <select id="selectList" resultType="BoardDto">
+        SELECT
+            BOARD_ID
+             , BOARD_SJ
+             , BOARD_CN
+        FROM
+            TB_BOARD
+    </select>-->
+
+</mapper>

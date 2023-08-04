@@ -1,0 +1,35 @@
+<!--
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+       xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd">
+
+   &lt;!&ndash;  jsp와 관련이 없는 객체(bean)를 설정해주는 비즈니스 로직을 위한 설정 파일
+    웹 자원과 관련되지 않은 모든 자원의 설정 &ndash;&gt;
+
+    &lt;!&ndash;<context:property-placeholder location="/WEB-INF/database.properties" />&ndash;&gt;
+
+    &lt;!&ndash; 자신의 mapper 인터페이스를 담을 패키지 지정 &ndash;&gt;
+    <mybatis-spring:scan base-package="com.example.spring_my.board.serviceImpl"></mybatis-spring:scan>
+
+    &lt;!&ndash; DataSource 설정 : HikariConfig 객체를 HikariDataSource 객체 생성자에 인자로 넣어준다. &ndash;&gt;
+    <bean id="hikariConfig" class="com.zaxxer.hikari.HikariConfig">
+        <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"></property>
+        <property name="jdbcUrl" value="jdbc:oracle:thin:@projectmyinstance.cxpg4obe7w2j.ap-northeast-2.rds.amazonaws.com:1521:orcl"></property>
+        <property name="username" value="admin"></property> &lt;!&ndash; 19c 버전 C##&ndash;&gt;
+        <property name="password" value="admin1234"></property>
+    </bean>
+    &lt;!&ndash; 생성자의 인자를 넣음 &ndash;&gt;
+    <bean id="datasource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+        <constructor-arg ref="hikariConfig"></constructor-arg>
+    </bean>
+
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="datasource"></property>
+    </bean>
+
+</beans>-->

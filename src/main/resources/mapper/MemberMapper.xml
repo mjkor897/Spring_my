@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.spring_my.member.serviceImpl.MemberMapper">
+
+    <select id="selectLogin" resultType="MemberDto">
+        SELECT
+              MBR_ID
+            , MBR_CD
+            , MBR_PW
+            , MBR_NM
+            , CMPNY_ADDR_DOMAIN
+            , MBR_RANK_NM
+            , DEPT_NM
+        FROM
+            TB_MEMBER
+        WHERE
+            MBR_ID = #{mbrId}
+            AND
+            MBR_PW = #{mbrPw}
+    </select>
+
+    <!-- 인사정보 ajax 조회 -->
+    <select id="selectMbrInfo" resultType="MemberDto">
+        SELECT
+              A.MBR_CD
+            , A.MBR_NM
+            , A.MBR_RANK_NM
+            , A.DEPT_CD
+            , A.DEPT_NM
+            , B.HIGH_DEPT_CD
+            , B.HIGH_DEPT_NM
+        FROM
+            TB_MEMBER A
+            LEFT OUTER JOIN TB_DEPT B
+                ON A.DEPT_CD = B.ROW_DEPT_CD
+        WHERE DEPT_NM = #{deptNm} OR HIGH_DEPT_NM = #{highDeptNm}
+    </select>
+
+    <!--<select id="srchSelectMbrInfo" resultType="MemberDto">
+        SELECT
+              MBR_NM
+            , MBR_RANK_NM
+            , DEPT_NM
+        FROM
+            TB_MEMBER
+        <if test=' mbrNm != null and mbrNm != "" '>
+            WHERE
+                UPPER(REPLACE(MBR_NM,' ','')) LIKE '%' || UPPER(REPLACE(#{mbrNm},' ','')) || '%'
+        </if>
+    </select>-->
+
+    <select id="srchSelectMbrInfo" resultType="MemberDto">
+        SELECT
+              MBR_NM
+            , MBR_RANK_NM
+            , DEPT_NM
+        FROM
+            TB_MEMBER
+        WHERE
+            UPPER(REPLACE(MBR_NM,' ','')) LIKE '%' || UPPER(REPLACE(#{mbrNm},' ','')) || '%'
+
+        UNION ALL
+
+        SELECT 'none', 'none', 'none'
+        FROM DUAL
+        WHERE NOT EXISTS (
+                SELECT
+                    MBR_NM
+                     , MBR_RANK_NM
+                     , DEPT_NM
+                FROM
+                    TB_MEMBER
+                WHERE
+                    UPPER(REPLACE(MBR_NM,' ','')) LIKE '%' || UPPER(REPLACE(#{mbrNm},' ','')) || '%'
+            )
+    </select>
+
+    <!-- 주소록 조회 -->
+    <select id="selectAddrBook" resultType="MemberDto">
+        SELECT
+               MBR_CD
+             , MBR_NM
+             , MBR_EMAIL
+             , DEPT_NM
+        FROM TB_MEMBER
+        ORDER BY MBR_CD ASC
+    </select>
+
+</mapper>

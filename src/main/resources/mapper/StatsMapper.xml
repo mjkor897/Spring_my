@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.spring_my.stats.serviceImpl.StatsMapper">
+
+    <!-- 현재인원 -->
+    <select id="totalMbr" resultType="StatsDto">
+        SELECT
+            COUNT(*) AS TOTAL_MBR
+        FROM
+            TB_MEMBER
+        WHERE
+            MBR_STTUS_CD = '재직'
+    </select>
+
+    <!-- 평균연령 -->
+    <select id="avgMbr" resultType="StatsDto">
+        SELECT
+            TRUNC(AVG(NVL(MBR_AGE, 0))) AS AVG_MBR
+        FROM
+            TB_MEMBER
+    </select>
+
+    <!-- 퇴사율 -->
+    <select id="retireMbr" resultType="StatsDto">
+        SELECT
+            ROUND((SELECT COUNT(*) FROM TB_MEMBER WHERE MBR_STTUS_CD = '퇴직') / (SELECT COUNT(*)FROM TB_MEMBER WHERE MBR_STTUS_CD != '퇴직') * 100, 0) AS RETIRE_MBR
+        FROM DUAL
+    </select>
+
+    <!-- 근속년수 -->
+    <select id="yosMbr" resultType="StatsDto">
+        SELECT
+            TRUNC(AVG(NVL(MONTHS_BETWEEN(SYSDATE, MBR_BGNDE_DATE)/12, 0)), 1) AS YOS_MBR
+        FROM
+            TB_MEMBER
+    </select>
+
+    <!-- 직원별현황 -->
+    <select id="cntMbr" resultType="StatsDto">
+        SELECT DISTINCT
+                  (SELECT COUNT(MBR_WORK) FROM TB_MEMBER WHERE MBR_WORK != '비정규직') AS CNT_JUNG
+                , (SELECT COUNT(MBR_WORK) FROM TB_MEMBER WHERE MBR_WORK = '비정규직') AS CNT_BEJUNG
+                , (SELECT COUNT(MBR_WORK) FROM TB_MEMBER WHERE MBR_WORK = '기타') AS CNT_ETC
+        FROM
+            TB_MEMBER
+    </select>
+
+    <!-- 재직현황 -->
+    <select id="cntTrl" resultType="StatsDto">
+        SELECT DISTINCT
+                (SELECT COUNT(MBR_STTUS_CD) FROM TB_MEMBER WHERE MBR_STTUS_CD = '재직') AS CNT_TENURE
+              , (SELECT COUNT(MBR_STTUS_CD) FROM TB_MEMBER WHERE MBR_STTUS_CD = '퇴직') AS CNT_RETIRE
+              , (SELECT COUNT(MBR_STTUS_CD) FROM TB_MEMBER WHERE MBR_STTUS_CD = '휴직') AS CNT_LOA
+        FROM
+            TB_MEMBER
+    </select>
+
+    <!-- 연도별 입사자 수 -->
+    <select id="cntBgnde" resultType="StatsDto">
+        <![CDATA[
+        SELECT
+               S1.CNT_BGNDE_2018
+             , S2.CNT_BGNDE_2019
+             , S3.CNT_BGNDE_2020
+             , S4.CNT_BGNDE_2021
+             , S5.CNT_BGNDE_2022
+             , S6.CNT_BGNDE_2023
+        FROM (
+                 SELECT
+                     COUNT(MBR_BGNDE_DATE) AS CNT_BGNDE_2018
+                 FROM
+                     TB_MEMBER
+                 WHERE
+                     MBR_BGNDE_DATE >= TO_DATE('2018-01-01', 'YYYY-MM-DD')
+                   AND
+                     MBR_BGNDE_DATE < TO_DATE('2018-12-01', 'YYYY-MM-DD')+1
+             ) S1,
+             (
+                 SELECT
+                     COUNT(MBR_BGNDE_DATE) AS CNT_BGNDE_2019
+                 FROM
+                     TB_MEMBER
+                 WHERE
+                     MBR_BGNDE_DATE >= TO_DATE('2019-01-01', 'YYYY-MM-DD')
+                   AND
+                     MBR_BGNDE_DATE < TO_DATE('2019-12-01', 'YYYY-MM-DD')+1
+             ) S2,
+             (
+                 SELECT
+                     COUNT(MBR_BGNDE_DATE) AS CNT_BGNDE_2020
+                 FROM
+                     TB_MEMBER
+                 WHERE
+                     MBR_BGNDE_DATE >= TO_DATE('2020-01-01', 'YYYY-MM-DD')
+                   AND
+                     MBR_BGNDE_DATE < TO_DATE('2020-12-01', 'YYYY-MM-DD')+1
+             ) S3,
+             (
+                 SELECT
+                     COUNT(MBR_BGNDE_DATE) AS CNT_BGNDE_2021
+                 FROM
+                     TB_MEMBER
+                 WHERE
+                     MBR_BGNDE_DATE >= TO_DATE('2021-01-01', 'YYYY-MM-DD')
+                   AND
+                     MBR_BGNDE_DATE < TO_DATE('2021-12-01', 'YYYY-MM-DD')+1
+             ) S4,
+             (
+                 SELECT
+                     COUNT(MBR_BGNDE_DATE) AS CNT_BGNDE_2022
+                 FROM
+                     TB_MEMBER
+                 WHERE
+                     MBR_BGNDE_DATE >= TO_DATE('2022-01-01', 'YYYY-MM-DD')
+                   AND
+                     MBR_BGNDE_DATE < TO_DATE('2022-12-01', 'YYYY-MM-DD')+1
+             ) S5,
+             (
+                 SELECT
+                     COUNT(MBR_BGNDE_DATE) AS CNT_BGNDE_2023
+                 FROM
+                     TB_MEMBER
+                 WHERE
+                     MBR_BGNDE_DATE >= TO_DATE('2023-01-01', 'YYYY-MM-DD')
+                   AND
+                     MBR_BGNDE_DATE < TO_DATE('2023-12-01', 'YYYY-MM-DD')+1
+             ) S6
+        ]]>
+    </select>
+
+    <!-- 연도별 퇴사자 수 -->
+    <select id="cntEnd" resultType="StatsDto">
+        <![CDATA[
+        SELECT
+               S1.CNT_END_2018
+             , S2.CNT_END_2019
+             , S3.CNT_END_2020
+             , S4.CNT_END_2021
+             , S5.CNT_END_2022
+             , S6.CNT_END_2023
+        FROM (
+                 SELECT
+                     COUNT(MBR_END_DATE) AS CNT_END_2018
+                 FROM
+                     TB_MEMBER
+                 WHERE
+                     MBR_END_DATE >= TO_DATE('2018-01-01', 'YYYY-MM-DD')
+                   AND
+                     MBR_END_DATE < TO_DATE('2018-12-01', 'YYYY-MM-DD')+1
+             ) S1,
+             (
+                 SELECT
+                     COUNT(MBR_END_DATE) AS CNT_END_2019
+                 FROM
+                     TB_MEMBER
+                 WHERE
+                     MBR_END_DATE >= TO_DATE('2019-01-01', 'YYYY-MM-DD')
+                   AND
+                     MBR_END_DATE < TO_DATE('2019-12-01', 'YYYY-MM-DD')+1
+             ) S2,
+             (
+                 SELECT
+                     COUNT(MBR_END_DATE) AS CNT_END_2020
+                 FROM
+                     TB_MEMBER
+                 WHERE
+                     MBR_END_DATE >= TO_DATE('2020-01-01', 'YYYY-MM-DD')
+                   AND
+                     MBR_END_DATE < TO_DATE('2020-12-01', 'YYYY-MM-DD')+1
+             ) S3,
+             (
+                 SELECT
+                     COUNT(MBR_END_DATE) AS CNT_END_2021
+                 FROM
+                     TB_MEMBER
+                 WHERE
+                     MBR_END_DATE >= TO_DATE('2021-01-01', 'YYYY-MM-DD')
+                   AND
+                     MBR_END_DATE < TO_DATE('2021-12-01', 'YYYY-MM-DD')+1
+             ) S4,
+             (
+                 SELECT
+                     COUNT(MBR_END_DATE) AS CNT_END_2022
+                 FROM
+                     TB_MEMBER
+                 WHERE
+                     MBR_END_DATE >= TO_DATE('2022-01-01', 'YYYY-MM-DD')
+                   AND
+                     MBR_END_DATE < TO_DATE('2022-12-01', 'YYYY-MM-DD')+1
+             ) S5,
+             (
+                 SELECT
+                     COUNT(MBR_END_DATE) AS CNT_END_2023
+                 FROM
+                     TB_MEMBER
+                 WHERE
+                     MBR_END_DATE >= TO_DATE('2023-01-01', 'YYYY-MM-DD')
+                   AND
+                     MBR_END_DATE < TO_DATE('2023-12-01', 'YYYY-MM-DD')+1
+             ) S6
+        ]]>
+    </select>
+
+    <!-- 남녀성비 -->
+    <select id="cntGender" resultType="StatsDto">
+        SELECT DISTINCT
+              (SELECT COUNT(MBR_GENDER) FROM TB_MEMBER WHERE MBR_GENDER = '여') AS CNT_WOMAN
+            , (SELECT COUNT(MBR_GENDER) FROM TB_MEMBER WHERE MBR_GENDER = '남') AS CNT_MAN
+        FROM
+            TB_MEMBER
+    </select>
+
+    <!-- 퇴직사유 -->
+    <select id="cntRetire" resultType="StatsDto">
+        SELECT DISTINCT
+                       (SELECT COUNT(MBR_RETIRE_CD) FROM TB_MEMBER WHERE MBR_RETIRE_CD = 'RETIRE_001') AS CNT_RE_001
+                      ,(SELECT COUNT(MBR_RETIRE_CD) FROM TB_MEMBER WHERE MBR_RETIRE_CD = 'RETIRE_002') AS CNT_RE_002
+                      ,(SELECT COUNT(MBR_RETIRE_CD) FROM TB_MEMBER WHERE MBR_RETIRE_CD = 'RETIRE_003') AS CNT_RE_003
+                      ,(SELECT COUNT(MBR_RETIRE_CD) FROM TB_MEMBER WHERE MBR_RETIRE_CD = 'RETIRE_004') AS CNT_RE_004
+                      ,(SELECT COUNT(MBR_RETIRE_CD) FROM TB_MEMBER WHERE MBR_RETIRE_CD = 'RETIRE_005') AS CNT_RE_005
+                      ,(SELECT COUNT(MBR_RETIRE_CD) FROM TB_MEMBER WHERE MBR_RETIRE_CD = 'RETIRE_006') AS CNT_RE_006
+        FROM TB_MEMBER
+    </select>
+
+    <!-- 직위별현황 -->
+    <select id="cntRank" resultType="StatsDto">
+        SELECT DISTINCT
+                        (SELECT COUNT(MBR_RANK_NM) FROM TB_MEMBER WHERE MBR_RANK_NM = '사장') AS CNT_RANK_001
+                      , (SELECT COUNT(MBR_RANK_NM) FROM TB_MEMBER WHERE MBR_RANK_NM = '전무') AS CNT_RANK_002
+                      , (SELECT COUNT(MBR_RANK_NM) FROM TB_MEMBER WHERE MBR_RANK_NM = '상무') AS CNT_RANK_003
+                      , (SELECT COUNT(MBR_RANK_NM) FROM TB_MEMBER WHERE MBR_RANK_NM = '부장') AS CNT_RANK_004
+                      , (SELECT COUNT(MBR_RANK_NM) FROM TB_MEMBER WHERE MBR_RANK_NM = '과장') AS CNT_RANK_005
+                      , (SELECT COUNT(MBR_RANK_NM) FROM TB_MEMBER WHERE MBR_RANK_NM = '차장') AS CNT_RANK_006
+                      , (SELECT COUNT(MBR_RANK_NM) FROM TB_MEMBER WHERE MBR_RANK_NM = '대리') AS CNT_RANK_007
+                      , (SELECT COUNT(MBR_RANK_NM) FROM TB_MEMBER WHERE MBR_RANK_NM = '주임') AS CNT_RANK_008
+                      , (SELECT COUNT(MBR_RANK_NM) FROM TB_MEMBER WHERE MBR_RANK_NM = '사원') AS CNT_RANK_009
+        FROM TB_MEMBER
+    </select>
+
+</mapper>

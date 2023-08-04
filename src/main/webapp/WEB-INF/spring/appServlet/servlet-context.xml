@@ -1,0 +1,39 @@
+<!--
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    &lt;!&ndash; 요청과 관련된 객체를 정의
+        url과 관련된 controller나, @(어노테이션), ViewResolver, Interceptor, MultipartResolver 등의 설정&ndash;&gt;
+
+    &lt;!&ndash; This tag registers the DefaultAnnotationHandlerMapping and
+         AnnotationMethodHandlerAdapter beans that are required for Spring MVC  &ndash;&gt;
+    <mvc:annotation-driven />
+    &lt;!&ndash; This tag allows for mapping the DispatcherServlet to "/" &ndash;&gt;
+    <mvc:default-servlet-handler />
+
+    &lt;!&ndash; Process annotations on registered beans like @Autowired... &ndash;&gt;
+    <context:annotation-config/>
+    &lt;!&ndash; 컴포넌트 스캔 &ndash;&gt;
+    &lt;!&ndash; src/main/java 폴더를 소스폴더로 지정 &ndash;&gt;
+    <context:component-scan base-package="com.project" />
+
+     스프링에서 인식해야할 객체가 담긴 패키지(패키지 경로 필요)
+    <context:component-scan base-package="com.example.spring_my.board.service" />
+    <context:component-scan base-package="com.example.spring_my.board.serviceImpl" />
+    <context:component-scan base-package="com.example.spring_my.board.web" />
+
+    <bean id="viewResolver"
+          class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/views/" />
+        <property name="suffix" value=".jsp" />
+    </bean>
+
+</beans>-->
